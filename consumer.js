@@ -1,19 +1,21 @@
 const { Kafka } = require('kafkajs');
 
 const kafka = new Kafka({
-  clientId: 'app-consumer-' + Math.random(),
-  brokers: ['localhost:29092'],
+  clientId: `app-consumer-${Math.random()}`,
+  brokers: [
+    'localhost:29092'
+  ],
 });
 
 const consumer = kafka.consumer({ groupId: 'date-group' });
 
-const run = async () => {
+async function main() {
   // Consuming
   await consumer.connect();
   await consumer.subscribe({ topic: 'current-date', fromBeginning: false });
 
   await consumer.run({
-    eachMessage: async ({ topic, partition, message }) => {
+    async eachMessage({ topic, partition, message }) {
       console.log({
         partition,
         offset: message.offset,
@@ -23,4 +25,5 @@ const run = async () => {
   });
 };
 
-run().catch(console.error);
+main()
+  .catch(console.error);
